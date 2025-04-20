@@ -46,6 +46,30 @@ WordCount *word_counts = NULL;
  */
 int num_words(FILE* infile) {
   int num_words = 0;
+  int in_word = 0;
+  int word_length = 0;
+  int c;
+
+  while ((c = fgetc(infile)) != EOF) {
+    if (isalpha(c)) {
+      word_length++;
+      if (!in_word) {
+        in_word = 1; // begin a new word
+      }
+    } else {
+      if (in_word && word_length > 1) {
+        num_words++;
+      }
+      // reset state regardless
+      in_word = 0; 
+      word_length = 0; 
+    }
+  }
+
+  // if file ends with an word
+  if (in_word && word_length > 1) {
+    num_words++;
+  }
 
   return num_words;
 }
@@ -62,6 +86,28 @@ int num_words(FILE* infile) {
  * and 0 otherwise.
  */
 int count_words(WordCount **wclist, FILE *infile) {
+  if (wclist == NULL || infile == NULL) {
+    return 1;
+  }
+  char word[MAX_WORD_LEN + 1]; //extra space for '\0'
+  int index = 0;
+  int c;
+  while ((c == fgetc(infile)) != EOF) {
+    // begin to count an word
+    if (isalpha(c)) {
+      if (index < MAX_WORD_LEN) {
+        word[index++] = tolower(c);
+      }     
+    } else if (index > 0) { // end an word
+        word[index] = '\0';
+        add_word(wclist, word);
+        index = 0;
+      }
+  }
+  if (index > 0) {
+    word[index] = '\0';
+    add_word(wclist, word);
+  }
   return 0;
 }
 
@@ -94,7 +140,11 @@ int main (int argc, char *argv[]) {
   // Freq Mode: outputs the frequency of each word
   bool freq_mode = false;
 
-  FILE *infile = NULL;
+  FILE *infile = fopen("words.txt", "r");
+  if (infile == NULL) {
+    perror("fail to open file!");
+    return 1;
+  }
 
   // Variables for command line argument parsing
   int i;
