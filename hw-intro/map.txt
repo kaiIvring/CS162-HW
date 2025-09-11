@@ -1,0 +1,40 @@
+/* gdb commands used in GDB basics exercise
+ * answers to all questions in bold
+ */
+
+// commands
+run
+start
+p &(argv)
+p *(argv)
+n
+n
+n
+n
+p &(recur)
+start
+n
+layout asm
+break *0x565562b1
+continue
+stepi(si)
+layout src
+backtrace
+break recur if i==0
+c
+backtrace
+frame 4
+info frame
+s
+n
+layout asm
+layout src
+c
+exit
+
+// answers
+4. 0xffffdcd4, "/home/workspace/code/personal/hw-intro/map"
+6. 0x56556273
+11. info registers
+18. saved eip: 0xf7da6519
+21. mov $0x0, %eax
