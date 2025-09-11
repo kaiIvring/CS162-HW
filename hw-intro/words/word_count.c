@@ -49,7 +49,7 @@ ssize_t len_words(WordCount *wchead) {
     if (wchead == NULL) {
       return 0;
     }
-    size_t len = 0;
+    ssize_t len = 0;
     WordCount* curr = wchead;
     while (curr != NULL) {
       len++;
@@ -75,25 +75,31 @@ int add_word(WordCount **wclist, char *word) {
      Otherwise insert with count 1.
      Returns 0 if no errors are encountered in the body of this function; 1 otherwise.
   */
- if (wclist == NULL || word == NULL) {
-  return 1;
- }
+  if (wclist == NULL || word == NULL) {
+    return 1;
+  }
 
- WordCount* found = find_word(*wclist, word);
- if (found != NULL) {
-  found->count++;
+  WordCount* found = find_word(*wclist, word);
+  if (found != NULL) {
+    found->count++;
+    return 0;
+  }
+
+  WordCount* new_node = malloc(sizeof(WordCount));
+  if (new_node == NULL) {
+    return 1;
+  }
+
+  new_node->word = strdup(word);
+  if (new_node->word == NULL) {
+    free(new_node);
+    return 1;
+  }
+
+  new_node->count = 1;
+  new_node->next = *wclist;
+  *wclist = new_node;
   return 0;
- }
-
- WordCount* new_node = malloc(sizeof(WordCount));
- if (new_node == NULL) {
-  return 1;
- }
-
- new_node->count = 1;
- new_node->next = *wclist;
- *wclist = new_node;
- return 0;
 }
 
 void fprint_words(WordCount *wchead, FILE *ofile) {
@@ -102,33 +108,4 @@ void fprint_words(WordCount *wchead, FILE *ofile) {
   for (wc = wchead; wc; wc = wc->next) {
     fprintf(ofile, "%i\t%s\n", wc->count, wc->word);
   }
-}
-
-void wordcount_insert_ordered(WordCount** wclist, WordCount* elem,
-        bool less(const WordCount *, const WordCount *)) {
-          if (*wclist == NULL || less(elem, *wclist)) {
-            elem->next = *wclist;
-            *wclist = elem;
-            return;
-          }
-
-          WordCount* curr = *wclist;
-          while (curr->next != NULL && less(curr->next, elem)) {
-            curr = curr->next;
-          }
-
-          elem->next = curr->next;
-          curr->next = elem;
-}
-
-void wordcount_sort(WordCount** wclist, bool less(const WordCount *, const WordCount *)) {
-  WordCount* sorted = NULL;
-  WordCount* curr = *wclist;
-  while (curr != NULL) {
-    WordCount* next = curr->next;
-    curr->next = NULL;
-    wordcount_insert_ordered(&sorted, curr, less);
-    curr = next;
-  }
-  *wclist = sorted;
 }

@@ -92,19 +92,20 @@ int count_words(WordCount **wclist, FILE *infile) {
   char word[MAX_WORD_LEN + 1]; //extra space for '\0'
   int index = 0;
   int c;
-  while ((c == fgetc(infile)) != EOF) {
+  while ((c = fgetc(infile)) != EOF) {
     // begin to count an word
     if (isalpha(c)) {
       if (index < MAX_WORD_LEN) {
         word[index++] = tolower(c);
       }     
-    } else if (index > 0) { // end an word
+    } else if (index > 1) { // end an word
         word[index] = '\0';
         add_word(wclist, word);
         index = 0;
       }
   }
-  if (index > 0) {
+  // the file ends with a letter
+  if (index > 1) {
     word[index] = '\0';
     add_word(wclist, word);
   }
