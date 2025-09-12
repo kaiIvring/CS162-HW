@@ -1,5 +1,6 @@
 /* gdb commands used in GDB basics exercise
- * answers to all questions in bold
+ * answers to all questions in bold in GDB basics
+ * answers to FSCTE(From source code to executable)
  */
 
 // commands
@@ -38,3 +39,38 @@ exit
 11. info registers
 18. saved eip: 0xf7da6519
 21. mov $0x0, %eax
+
+// answers to FSCTE
+1. 
+movl    8(%ebp), %eax   ; Load current value of 'i' into EAX
+subl    $1, %eax        ; Calculate i-1 (store in EAX)
+subl    $12, %esp       ; Adjust stack pointer (allocate space)
+pushl   %eax            ; Push argument (i-1) onto stack
+call    recur           ; Execute recursive call
+
+2. 
+.data: initialized data
+.text: Code Segment, all executable instructions
+
+3. 
+use the -t flag: i386-objdump -t recurse.o
+
+4. 
+g: global, can be globally referenced
+O: object, variable/object
+F: Function
+*UND*: undefined, parsed when linking other target files/libraries
+
+5. don't know
+
+6. .text
+
+7. symbol table
+
+8. no, i can't see any stack or heap Segment.
+objdump only shows static parts of the executable file 
+(the sections and segments stored on disk, like .text, .data, .rodata, etc.).
+The stack and heap are runtime memory regions created by the operating system when the program runs.
+They are not stored in the executable file, so objdump cannot display them.
+
+9. downward
